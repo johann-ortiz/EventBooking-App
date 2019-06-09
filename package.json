@@ -1,0 +1,28 @@
+{
+  "name": "eventbooking-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Molderck/EventBooking-App.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Molderck/EventBooking-App/issues"
+  },
+  "homepage": "https://github.com/Molderck/EventBooking-App#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.8.0",
+    "graphql": "^14.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
