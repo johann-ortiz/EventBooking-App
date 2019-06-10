@@ -42,7 +42,15 @@ app.use(
     `),
     rootValue: {
       events: () => {
-        return events;
+        return Event.find()
+          .then(events => {
+            return events.map(event => {
+              return { ...event._doc };
+            });
+          })
+          .catch(error => {
+            throw error;
+          });
       },
       createEvent: args => {
         const event = new Event({
