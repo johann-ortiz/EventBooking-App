@@ -90,7 +90,6 @@ module.exports = {
 
       return createdEvent;
     } catch (err) {
-      console.log(err);
       throw err;
     }
   },
@@ -111,5 +110,20 @@ module.exports = {
     } catch (error) {
       throw error;
     }
+  },
+
+  bookEvent: async args => {
+    const fetchedEvent = await Event.findOne({ _id: args.eventId });
+    const booking = new Booking({
+      user: "5cfdc8b9f157bb25f419dc85",
+      event: fetchedEvent
+    });
+    const result = await booking.save();
+    return {
+      ...result._doc,
+      _id: result.id,
+      createdAt: new Date(result._doc.createdAt).toISOString(),
+      updatedAt: new Date(result._doc.updatedAt).toISOString()
+    };
   }
 };
