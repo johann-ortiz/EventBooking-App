@@ -1,4 +1,5 @@
 const Event = require("../../models/event");
+const User = require("../../models/User");
 const { transformEvent } = require("./merge");
 
 module.exports = {
@@ -22,13 +23,13 @@ module.exports = {
       description: args.eventInput.description,
       price: +args.eventInput.price,
       date: new Date(args.eventInput.date),
-      creator: "5cfdc8b9f157bb25f419dc85"
+      creator: req.userId
     });
     let createdEvent;
     try {
       const result = await event.save();
       createdEvent = transformEvent(result);
-      const creator = await User.findById("5cfdc8b9f157bb25f419dc85");
+      const creator = await User.findById(req.userId);
 
       if (!creator) {
         throw new Error("User not found.");
