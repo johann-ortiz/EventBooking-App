@@ -26,14 +26,14 @@ export default class Auth extends Component {
       }"}) {
         _id
         email
-      }
+        }
       }
       `
     };
 
     fetch("http://localhost:4000/graphql", {
       method: "POST",
-      body: JSON.stringify(),
+      body: JSON.stringify(requestBody),
       headers: {
         "Content-Type": "application/json"
       }
