@@ -4,7 +4,8 @@ import "./Auth.css";
 export default class Auth extends Component {
   state = {
     email: "",
-    password: ""
+    password: "",
+    isLogin: true
   };
 
   handleChange = event => {
@@ -15,21 +16,43 @@ export default class Auth extends Component {
     });
   };
 
+  switchModeHandler = () => {
+    this.setState({
+      isLogin: !this.state.isLogin
+    });
+  };
+
   submitHandler = event => {
     event.preventDefault();
 
-    const requestBody = {
+    let requestBody = {
       query: `
-      mutation {
-        createUser(userInput: {email: "${this.state.email}", password: "${
+        query {
+          login(email: "${this.state.email}", password: "${
         this.state.password
-      }"}) {
-        _id
-        email
+      }"){
+            userId
+            token
+            tokenExpiration
+          }
         }
-      }
       `
     };
+
+    if (!this.state.isLogin) {
+      requestBody = {
+        query: `
+        mutation {
+          createUser(userInput: {email: "${this.state.email}", password: "${
+          this.state.password
+        }"}) {
+          _id
+          email
+          }
+        }
+        `
+      };
+    }
 
     fetch("http://localhost:4000/graphql", {
       method: "POST",
@@ -37,7 +60,19 @@ export default class Auth extends Component {
       headers: {
         "Content-Type": "application/json"
       }
-    });
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   render() {
@@ -63,7 +98,9 @@ export default class Auth extends Component {
         </div>
         <div className="form-actions">
           <button type="submit">Submit</button>
-          <button type="button">Switch to SignUp</button>
+          <button type="button" onClick={this.switchModeHandler}>
+            Switch to {this.state.isLogin ? "Signup" : "Login"}
+          </button>
         </div>
       </form>
     );
