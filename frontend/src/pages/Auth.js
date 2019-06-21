@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./Auth.css";
+import AuthContext from "../context/auth-context";
 
 export default class Auth extends Component {
   state = {
@@ -7,6 +8,8 @@ export default class Auth extends Component {
     password: "",
     isLogin: true
   };
+
+  static contextType = AuthContext;
 
   handleChange = event => {
     const name = event.target.name;
@@ -68,7 +71,13 @@ export default class Auth extends Component {
         return res.json();
       })
       .then(resData => {
-        console.log(resData);
+        if (resData.data.login.token) {
+          this.context.login(
+            resData.data.login.token,
+            resData.data.login.userId,
+            resData.data.login.tokenExpiration
+          );
+        }
       })
       .catch(error => {
         console.log(error);
