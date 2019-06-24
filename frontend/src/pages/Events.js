@@ -2,10 +2,25 @@ import React, { Component } from "react";
 import "./Events.css";
 import Modal from "../components/modal/Modal";
 import Backdrop from "../components/backdrop/Backdrop";
+import AuthContext from "../context/auth-context";
 
 export default class Events extends Component {
   state = {
-    creating: false
+    creating: false,
+    title: "",
+    price: 0,
+    date: "",
+    description: ""
+  };
+
+  static contextType = AuthContext;
+
+  inputCreateEventHandler = event => {
+    const name = event.target.name;
+    const value = event.target.value;
+    this.setState({
+      [name]: value
+    });
   };
 
   startCreateEventHandler = () => {
@@ -14,6 +29,60 @@ export default class Events extends Component {
 
   modalConfirmHandler = () => {
     this.setState({ creating: false });
+
+    if (
+      this.state.title.length === 0 ||
+      this.state.price.length === 0 ||
+      this.state.date.length === 0 ||
+      this.state.description.length === 0
+    ) {
+      return;
+    }
+
+    const requestBody = {
+      query: `
+          mutation {
+            createEvent(eventInput: {title: "${
+              this.state.title
+            }", description: "${this.state.description}", price: ${
+        this.state.price
+      }, date: "${this.state.date}"}) {
+              _id
+              title
+              description
+              date
+              price
+              creator {
+                _id
+                email
+              }
+            }
+          }
+        `
+    };
+
+    const token = this.context.token;
+
+    fetch("http://localhost:4000/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   modalCancelHandler = () => {
@@ -32,7 +101,44 @@ export default class Events extends Component {
             onCancel={this.modalCancelHandler}
             onConfirm={this.modalConfirmHandler}
           >
-            <p>Modal Content</p>
+            <form>
+              <div className="form-control">
+                <label htmlFor="title">Title</label>
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  onChange={this.inputCreateEventHandler}
+                />
+              </div>
+              <div className="form-control">
+                <label htmlFor="price">Price</label>
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  onChange={this.inputCreateEventHandler}
+                />
+              </div>
+              <div className="form-control">
+                <label htmlFor="date">Date</label>
+                <input
+                  type="datetime-local"
+                  id="date"
+                  name="date"
+                  onChange={this.inputCreateEventHandler}
+                />
+              </div>
+              <div className="form-control">
+                <label htmlFor="description">Description</label>
+                <textarea
+                  rows="4"
+                  id="description"
+                  name="description"
+                  onChange={this.inputCreateEventHandler}
+                />
+              </div>
+            </form>
           </Modal>
         )}
         <div className="events-control">
