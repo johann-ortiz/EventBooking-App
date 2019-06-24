@@ -149,6 +149,9 @@ export default class Events extends Component {
             </button>
           </div>
         )}
+        <ul className="events-list">
+          <li className="events-list-item">Test</li>
+        </ul>
       </React.Fragment>
     );
   }
