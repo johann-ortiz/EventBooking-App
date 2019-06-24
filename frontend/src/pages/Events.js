@@ -141,12 +141,14 @@ export default class Events extends Component {
             </form>
           </Modal>
         )}
-        <div className="events-control">
-          <p>Share Your Events</p>
-          <button className="btn" onClick={this.startCreateEventHandler}>
-            Create Event
-          </button>
-        </div>
+        {this.context.token && (
+          <div className="events-control">
+            <p>Share Your Events</p>
+            <button className="btn" onClick={this.startCreateEventHandler}>
+              Create Event
+            </button>
+          </div>
+        )}
       </React.Fragment>
     );
   }
