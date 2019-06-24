@@ -10,10 +10,15 @@ export default class Events extends Component {
     title: "",
     price: 0,
     date: "",
-    description: ""
+    description: "",
+    events: []
   };
 
   static contextType = AuthContext;
+
+  componentDidMount() {
+    this.fetchEvents();
+  }
 
   inputCreateEventHandler = event => {
     const name = event.target.name;
@@ -78,7 +83,7 @@ export default class Events extends Component {
         return res.json();
       })
       .then(resData => {
-        console.log(resData);
+        this.fetchEvents();
       })
       .catch(error => {
         console.log(error);
@@ -89,7 +94,55 @@ export default class Events extends Component {
     this.setState({ creating: false });
   };
 
+  fetchEvents = () => {
+    const requestBody = {
+      query: `
+          query {
+            events {
+              _id
+              title
+              description
+              date
+              price
+              creator {
+                _id
+                email
+              }
+            }
+          }
+        `
+    };
+
+    fetch("http://localhost:4000/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        const events = resData.data.events;
+        this.setState({ events });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   render() {
+    const eventList = this.state.events.map(event => {
+      return (
+        <li key={event._id} className="events-list-item">
+          {event.title}
+        </li>
+      );
+    });
     return (
       <React.Fragment>
         {this.state.creating && <Backdrop />}
@@ -149,9 +202,7 @@ export default class Events extends Component {
             </button>
           </div>
         )}
-        <ul className="events-list">
-          <li className="events-list-item">Test</li>
-        </ul>
+        <ul className="events-list">{eventList}</ul>
       </React.Fragment>
     );
   }
