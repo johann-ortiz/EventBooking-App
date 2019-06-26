@@ -92,8 +92,8 @@ export default class Events extends Component {
               _id: this.context.userId
             }
           });
+          return { events: updatedEvents };
         });
-        return { events: updatedEvents };
       })
       .catch(error => {
         console.log(error);
