@@ -172,6 +172,7 @@ export default class Events extends Component {
             canConfirm
             onCancel={this.modalCancelHandler}
             onConfirm={this.modalConfirmHandler}
+            confirmText="Confirm"
           >
             <form>
               <div className="form-control">
@@ -220,6 +221,7 @@ export default class Events extends Component {
             canConfirm
             onCancel={this.modalCancelHandler}
             onConfirm={this.bookEventHandler}
+            confirmText="Book"
           >
             <h1>{this.state.selectedEvent.title}</h1>
             <h2>
