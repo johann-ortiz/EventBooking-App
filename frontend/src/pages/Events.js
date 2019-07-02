@@ -18,6 +18,8 @@ export default class Events extends Component {
     selectedEvent: null
   };
 
+  isActive = true;
+
   static contextType = AuthContext;
 
   componentDidMount() {
@@ -142,11 +144,15 @@ export default class Events extends Component {
       })
       .then(resData => {
         const events = resData.data.events;
-        this.setState({ events, isLoading: false });
+        if (this.isActive) {
+          this.setState({ events, isLoading: false });
+        }
       })
       .catch(error => {
         console.log(error);
-        this.setState({ isLoading: false });
+        if (this.isActive) {
+          this.setState({ isLoading: false });
+        }
       });
   };
 
@@ -200,6 +206,10 @@ export default class Events extends Component {
         console.log(error);
       });
   };
+
+  componentWillUnmount() {
+    this.isActive = false;
+  }
 
   render() {
     return (
