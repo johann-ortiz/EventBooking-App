@@ -57,13 +57,57 @@ export default class Bookings extends Component {
       });
   };
 
+  deleteBookingHandler = bookingId => {
+    this.setState({ isLoading: true });
+    const requestBody = {
+      query: `
+          mutation {
+            cancelBooking(bookingId: "${bookingId}") {
+              _id
+              title
+            }
+          }
+        `
+    };
+
+    fetch("http://localhost:4000/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + this.context.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState(prevState => {
+          const updatedBookings = prevState.bookings.filter(booking => {
+            return booking._id !== bookingId;
+          });
+          return { bookings: updatedBookings, isLoading: false };
+        });
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({ isLoading: false });
+      });
+  };
+
   render() {
     return (
       <React.Fragment>
         {this.state.isLoading ? (
           <Spinner />
         ) : (
-          <BookingList bookings={this.state.bookings} />
+          <BookingList
+            bookings={this.state.bookings}
+            onDelete={this.deleteBookingHandler}
+          />
         )}
       </React.Fragment>
     );
